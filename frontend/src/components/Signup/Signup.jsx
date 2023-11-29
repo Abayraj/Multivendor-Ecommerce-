@@ -3,6 +3,12 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import styles from "../../styles/styles";
 import { Link } from "react-router-dom";
 import { RxAvatar } from "react-icons/rx";
+import axios from "axios";
+import { axiosInstance } from "../../server";
+
+// import axiosInstance from "../../server";
+
+// import { config } from "dotenv";
 
 export const Signup = () => {
     const [name, setName] = useState("");
@@ -10,13 +16,36 @@ export const Signup = () => {
     const [password, setPassword] = useState("");
     const [visible, setVisible] = useState(false);
     const [avatar, setAvatar] = useState(null);
-    const handleSubmit = () => {
-        console.log("handle submit");
-    };
+
     const handleFileInputChange = (event) => {
         const file = event.target.files[0];
         setAvatar(file);
     };
+
+    console.log(avatar, "avater ");
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        const config =  {"Content-Type": "multipart/form-data"}
+        const newForm = new FormData();
+        newForm.append("file", avatar);
+        newForm.append("name", name);
+        newForm.append("email", email);
+        newForm.append("password", password);
+
+
+        axiosInstance
+            .post("/api/v2/user/create-user", newForm,{
+                headers:config
+            })
+
+            .then((res) => {
+                console.log(res);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    };
+
     return (
         <div className="min-h-screen bg-slate-50 flex flex-col  py-12 sm:px-6 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -26,7 +55,7 @@ export const Signup = () => {
             </div>
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
                 <div className="bg-white py-8 px-4 shadow-md sm:rounded-lg sm:px-10">
-                    <form className="space-y-6">
+                    <form className="space-y-6" onSubmit={handleSubmit}>
                         <div>
                             <label
                                 htmlFor="email"
@@ -109,7 +138,6 @@ export const Signup = () => {
                             <div className={`${styles.noramlFlex}`}></div>
                         </div>
                         <div>
-                          
                             <div className="mt-2 flex items-center">
                                 <span className="inline-block h-8 w-8 rounded-full overflow-hidden">
                                     {avatar ? (
@@ -122,17 +150,19 @@ export const Signup = () => {
                                         <RxAvatar className="h-7 w-9" />
                                     )}
                                 </span>
-                                <label htmlFor="file-input" 
-                                className="ml-5 flex  items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white">
+                                <label
+                                    htmlFor="file-input"
+                                    className="ml-5 flex  items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white"
+                                >
                                     <span>Upload a file</span>
-                                    <input type="file" 
-                                    name="avatar"
-                                    id="file-input"
-                                    accept=".jpg,.jpeg,.png"
-                                    onChange={handleFileInputChange}
-                                    className="sr-only"
+                                    <input
+                                        type="file"
+                                        name="avatar"
+                                        id="file-input"
+                                        accept=".jpg,.jpeg,.png"
+                                        className="sr-only"
+                                        onChange={handleFileInputChange}
                                     />
-
                                 </label>
                             </div>
                         </div>

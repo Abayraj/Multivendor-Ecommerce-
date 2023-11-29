@@ -1,4 +1,4 @@
-const { connect } = require("mongoose");
+
 const app = require ("./app");
 const connectDatabase = require("./db/database");
 //Handling unaught Exception 
